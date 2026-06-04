@@ -112,7 +112,7 @@ function initMenuSearch() {
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const activeButton = document.querySelector('.filter-btn.active');
-            const category = activeButton ? activeButton.getAttribute('data-category') : 'makis';
+            const category = activeButton ? activeButton.getAttribute('data-category') : 'todos';
             const searchTerm = this.value;
             
             // Renderizar productos con búsqueda

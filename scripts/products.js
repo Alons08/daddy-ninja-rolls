@@ -453,14 +453,16 @@ function getProductPrice(product) {
     return product.price;
 }
 
-function renderProducts(category = 'makis', searchTerm = '') {
+function renderProducts(category = 'todos', searchTerm = '') {
     const menuItemsContainer = document.getElementById('menu-items');
     if (!menuItemsContainer) return;
 
     menuItemsContainer.innerHTML = '';
 
-    // Filtrar por categoría
-    let filteredProducts = products.filter(product => product.category === category);
+    // Filtrar por categoría (si es 'todos', mostrar todas)
+    let filteredProducts = category === 'todos' 
+        ? products 
+        : products.filter(product => product.category === category);
     
     // Filtrar por búsqueda (solo en nombre, case-insensitive)
     if (searchTerm.trim()) {
