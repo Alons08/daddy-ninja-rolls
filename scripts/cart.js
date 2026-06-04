@@ -797,7 +797,7 @@ function submitOrder() {
     }
 
     // Construir mensaje para WhatsApp
-    let message = `¡Hola Makis! Quiero realizar el siguiente pedido:\n\n`;
+    let message = `¡Hola Daddy Ninja Rolls! Quiero realizar el siguiente pedido:\n\n`;
     message += `*DATOS DEL CLIENTE*\n`;
     message += `🙍‍♂️ *Nombre:* ${customerName}\n`;
     message += `📞 *Teléfono:* ${customerPhone}\n`;
@@ -822,7 +822,7 @@ function submitOrder() {
     message += `\nPor favor, confirmen mi pedido. ¡Gracias!`;
             
     // Abrir WhatsApp 931088900 mio
-    const whatsappUrl = `https://wa.me/51926656517?text=${encodeURIComponent(message)}`; /*AQUI EL NUMERO*/
+    const whatsappUrl = `https://wa.me/51910089308?text=${encodeURIComponent(message)}`; /*AQUI EL NUMERO*/
     window.open(whatsappUrl, '_blank');
     
     hideCart(); //ocultar el carrito
