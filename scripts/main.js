@@ -97,14 +97,17 @@ function initMenuSearch() {
     filterButtons.forEach(button => {
         button.addEventListener('click', function() {
             const category = this.getAttribute('data-category');
-            const searchTerm = searchInput ? searchInput.value : '';
             
             // Actualizar estado activo de botones
             filterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
+
+            if (searchInput) {
+                searchInput.value = '';
+            }
             
             // Renderizar productos con búsqueda y categoría
-            renderProducts(category, searchTerm);
+            renderProducts(category, '');
         });
     });
     

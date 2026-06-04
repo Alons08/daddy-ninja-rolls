@@ -523,10 +523,14 @@ function renderProducts(category = 'todos', searchTerm = '') {
 
 function setupFilters() {
     const filterButtons = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('search-input');
     filterButtons.forEach(button => {
         button.addEventListener('click', function() {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
+            if (searchInput) {
+                searchInput.value = '';
+            }
             renderProducts(this.dataset.category);
         });
     });

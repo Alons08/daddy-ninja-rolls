@@ -98,6 +98,12 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* centrar el botón de checkout */
+#checkout {
+    display: block;
+    margin: 0 auto;
+}
+
 #cancel-order {
     background-color: var(--danger-color);
     color: var(--white);
