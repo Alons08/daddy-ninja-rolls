@@ -453,13 +453,22 @@ function getProductPrice(product) {
     return product.price;
 }
 
-function renderProducts(category = 'makis') {
+function renderProducts(category = 'makis', searchTerm = '') {
     const menuItemsContainer = document.getElementById('menu-items');
     if (!menuItemsContainer) return;
 
     menuItemsContainer.innerHTML = '';
 
-    const filteredProducts = products.filter(product => product.category === category);
+    // Filtrar por categoría
+    let filteredProducts = products.filter(product => product.category === category);
+    
+    // Filtrar por búsqueda (solo en nombre, case-insensitive)
+    if (searchTerm.trim()) {
+        const lowerSearch = searchTerm.toLowerCase();
+        filteredProducts = filteredProducts.filter(product => 
+            product.name.toLowerCase().includes(lowerSearch)
+        );
+    }
 
     if (filteredProducts.length === 0) {
         menuItemsContainer.innerHTML = `

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavbar();
     initHero();
     initScrollAnimations();
+    initMenuSearch();
     
     // Verificar y actualizar el carrito al cargar la página
     if (typeof initCart === 'function') {
@@ -86,6 +87,38 @@ function initScrollAnimations() {
     }, { threshold: 0.1 });
     
     animateElements.forEach(element => observer.observe(element));
+}
+
+function initMenuSearch() {
+    const searchInput = document.getElementById('search-input');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    // Agregar event listeners a los botones de categoría
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            const searchTerm = searchInput ? searchInput.value : '';
+            
+            // Actualizar estado activo de botones
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Renderizar productos con búsqueda y categoría
+            renderProducts(category, searchTerm);
+        });
+    });
+    
+    // Agregar event listener al input de búsqueda
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const activeButton = document.querySelector('.filter-btn.active');
+            const category = activeButton ? activeButton.getAttribute('data-category') : 'makis';
+            const searchTerm = this.value;
+            
+            // Renderizar productos con búsqueda
+            renderProducts(category, searchTerm);
+        });
+    }
 }
 
 // Efecto de sombra en navbar al hacer scroll
