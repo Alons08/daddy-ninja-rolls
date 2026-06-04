@@ -573,7 +573,7 @@ function setupProductEvents() {
 }
 
 function initProducts() {
-    renderProducts('makis');
+    renderProducts('todos');
     setupFilters();
     setupProductEvents();
 }
