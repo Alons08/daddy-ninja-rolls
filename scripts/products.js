@@ -453,6 +453,18 @@ function getProductPrice(product) {
     return product.price;
 }
 
+function getNoResultsMessage(category, searchTerm) {
+    const hasSearchText = Boolean(searchTerm.trim());
+
+    if (hasSearchText) {
+        return category === 'todos'
+            ? 'No se encontraron productos con ese nombre'
+            : 'No se encontraron productos con ese nombre en esta categoría';
+    }
+
+    return 'No hay productos disponibles en esta categoría';
+}
+
 function renderProducts(category = 'todos', searchTerm = '') {
     const menuItemsContainer = document.getElementById('menu-items');
     if (!menuItemsContainer) return;
@@ -473,10 +485,11 @@ function renderProducts(category = 'todos', searchTerm = '') {
     }
 
     if (filteredProducts.length === 0) {
+        const noResultsMessage = getNoResultsMessage(category, searchTerm);
         menuItemsContainer.innerHTML = `
             <div class="no-products">
                 <i class="fas fa-utensils"></i>
-                <p>No hay productos disponibles en esta categoría</p>
+                <p>${noResultsMessage}</p>
             </div>
         `;
         return;
