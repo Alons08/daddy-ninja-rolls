@@ -347,7 +347,7 @@ const products = [
     {
         id: 35,
         name: 'Crispy Rice',
-        description: 'Arroz frito en panko con tartar de salmón.',
+        description: '6 unidades de arroz frito en panko con tartar de salmón.',
         image: './images/menu/crispy-rice.jpg',
         category: 'entradas',
         price: 12.0,
@@ -357,7 +357,7 @@ const products = [
     {
         id: 36,
         name: 'Ebi Furai',
-        description: 'Langostinos fritos con panko acompañado de una salsa dulce.',
+        description: '6 unidades de langostinos fritos con panko acompañado de una salsa dulce.',
         image: './images/menu/ebi-furai.jpg',
         category: 'entradas',
         price: 18.0,
@@ -367,7 +367,7 @@ const products = [
     {
         id: 37,
         name: 'Sandwich Furai',
-        description: 'Sándwich de arroz empanizado y frito con relleno de queso crema, palta y salmón.',
+        description: '4 unidades de sándwich de arroz empanizado y frito con relleno de queso crema, palta y salmón.',
         image: './images/menu/sandwich-furai.jpg',
         category: 'entradas',
         price: 18.0,
@@ -377,7 +377,7 @@ const products = [
     {
         id: 38,
         name: 'Onigiri (Frito)',
-        description: 'Onigiri frito - 1 unidad.',
+        description: '1 unidad de Onigiri frito.',
         image: './images/menu/onigiri-frito.jpg',
         category: 'entradas',
         price: 8.0,
@@ -387,7 +387,7 @@ const products = [
     {
         id: 39,
         name: 'Onigiri (Tradicional)',
-        description: 'Onigiri tradicional - 1 unidad.',
+        description: '1 unidad de Onigiri tradicional.',
         image: './images/menu/onigiri-tradicional.jpg',
         category: 'entradas',
         price: 7.0,
@@ -397,7 +397,7 @@ const products = [
     {
         id: 40,
         name: 'Gyozas',
-        description: 'Empanadillas japonesas rellenas de carne de cerdo, pollo y verduras.',
+        description: '6 unidades de empanadillas japonesas rellenas de carne de cerdo, pollo y verduras.',
         image: './images/menu/gyozas.jpg',
         category: 'entradas',
         price: 16.0,
@@ -407,7 +407,7 @@ const products = [
     {
         id: 41,
         name: 'Age Gyozas',
-        description: 'Empanadillas fritas japonesas rellenas de carne de cerdo y pollo.',
+        description: '6 unidades de empanadillas fritas japonesas rellenas de carne de cerdo y pollo.',
         image: './images/menu/age-gyozas.jpg',
         category: 'entradas',
         price: 17.0,
@@ -439,6 +439,16 @@ const products = [
         name: 'Alitas Ninja (6 unidades)',
         description: 'Alitas con salsa imperial semi picante (6 unidades).',
         image: './images/menu/alitas-ninja.jpg',
+        category: 'alitas',
+        price: 18.0,
+        portion: 1,
+        available: true
+    }    ,
+    {
+        id: 50,
+        name: 'Alitas BBQ (6 unidades)',
+        description: 'Alitas con salsa BBQ (6 unidades).',
+        image: './images/menu/alitas-bbq.jpg',
         category: 'alitas',
         price: 18.0,
         portion: 1,
