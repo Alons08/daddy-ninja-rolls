@@ -134,7 +134,7 @@ function addToCart(product, quantity = 1) {
     showNotification(`${product.name} añadido al carrito (${quantity} unidad(es))`, 'success');
 }
 
-function addPromoToCart(promo) {
+function addPromoToCart(promo, initialFlavors = null) {
     const existing = cart.find(i => i.type === 'promo' && i.promoKey === promo.key);
     if (existing) {
         showNotification('Esta promoción ya está en el carrito', 'error');
@@ -142,6 +142,7 @@ function addPromoToCart(promo) {
     }
     const makiCount = promo.makiCount || 0;
     const extras = promo.extras || [];
+    const flavors = initialFlavors ? initialFlavors.slice() : new Array(makiCount).fill(null);
     cart.push({
         type: 'promo',
         promoKey: promo.key,
@@ -150,10 +151,10 @@ function addPromoToCart(promo) {
         quantity: 1,
         makiCount: makiCount,
         extras: extras,
-        flavors: new Array(makiCount).fill(null)
+        flavors: flavors
     });
     updateCart();
-    showNotification(`${promo.title} agregada al carrito. Elige los sabores.`, 'success');
+    showNotification(`${promo.title} agregada al carrito. Puedes modificar los sabores.`, 'success');
 }
 
 window.addToCartGlobal = addToCart;

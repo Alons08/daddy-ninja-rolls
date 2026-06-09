@@ -1458,3 +1458,135 @@ body {
     background-color: rgba(231, 76, 60, 0.05);
     box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
 }
+
+/* Modal para elegir sabores de promociones */
+.flavor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flavor-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+}
+
+.flavor-modal-content {
+    position: relative;
+    background-color: var(--white);
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 10002;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.flavor-modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--light-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flavor-modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--primary-dark);
+}
+
+.flavor-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--gray);
+    line-height: 1;
+}
+
+.flavor-modal-close:hover {
+    color: var(--danger-color);
+}
+
+.flavor-modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.flavor-modal-body p {
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.flavor-selector-modal {
+    margin-bottom: 16px;
+}
+
+.flavor-selector-modal label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+}
+
+.flavor-selector-modal select {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    background-color: var(--white);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.flavor-modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--light-gray);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+@media (max-width: 480px) {
+    .flavor-selector-modal label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    .flavor-selector-modal select {
+        width: 100%;
+    }
+    .flavor-modal-content {
+        width: 95%;
+    }
+}
+
+/* Estilos específicos para el botón Cancelar dentro del modal */
+.flavor-modal .btn-outline {
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #333;
+}
+
+.flavor-modal .btn-outline:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+    transform: none;
+    box-shadow: none;
+}

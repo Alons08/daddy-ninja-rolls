@@ -408,7 +408,7 @@ const products = [
 
 window.restaurantProducts = products;
 
-// Array de promociones
+// Promociones
 const promotions = [
     { key: 'wednesday-3x2', title: 'OFERTA MIÉRCOLES 3x2', text: '3 tablas de 12 cortes por S/40', makiCount: 3, price: 40, onlyOn: 3 },
     { key: 'bundle-48', title: '48 Makis', text: '4 tablas de 12 cortes — S/70', makiCount: 4, price: 70 },
@@ -433,6 +433,75 @@ function escapeHtml(str) {
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
         return m;
+    });
+}
+
+// Modal para elegir sabores antes de agregar la promoción
+function createFlavorModal(promo, onConfirm) {
+    const existingModal = document.getElementById('flavor-modal');
+    if (existingModal) existingModal.remove();
+
+    const makis12 = window.restaurantProducts.filter(p => p.category === 'makis' && p.portion === 12);
+    const makiCount = promo.makiCount;
+
+    const modal = document.createElement('div');
+    modal.id = 'flavor-modal';
+    modal.className = 'flavor-modal';
+    modal.innerHTML = `
+        <div class="flavor-modal-overlay"></div>
+        <div class="flavor-modal-content">
+            <div class="flavor-modal-header">
+                <h3>${escapeHtml(promo.title)}</h3>
+                <button class="flavor-modal-close">&times;</button>
+            </div>
+            <div class="flavor-modal-body">
+                <p>Elige los sabores de los ${makiCount} makis de 12 cortes:</p>
+                <div id="flavor-selectors-container"></div>
+            </div>
+            <div class="flavor-modal-footer">
+                <button class="btn btn-outline cancel-modal">Cancelar</button>
+                <button class="btn btn-primary confirm-modal">Agregar al carrito</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const container = modal.querySelector('#flavor-selectors-container');
+    const selectedFlavors = new Array(makiCount).fill(null);
+
+    for (let i = 0; i < makiCount; i++) {
+        const selectorDiv = document.createElement('div');
+        selectorDiv.className = 'flavor-selector-modal';
+        const options = makis12.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+        selectorDiv.innerHTML = `
+            <label>Maki ${i+1}: 
+                <select data-index="${i}">
+                    <option value="">-- Seleccionar sabor --</option>
+                    ${options}
+                </select>
+            </label>
+        `;
+        const select = selectorDiv.querySelector('select');
+        select.addEventListener('change', (e) => {
+            const idx = parseInt(e.target.dataset.index);
+            selectedFlavors[idx] = e.target.value ? parseInt(e.target.value) : null;
+        });
+        container.appendChild(selectorDiv);
+    }
+
+    const closeModal = () => modal.remove();
+    modal.querySelector('.flavor-modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.cancel-modal').addEventListener('click', closeModal);
+    modal.querySelector('.flavor-modal-overlay').addEventListener('click', closeModal);
+
+    modal.querySelector('.confirm-modal').addEventListener('click', () => {
+        if (selectedFlavors.some(f => f === null)) {
+            alert('Por favor selecciona todos los sabores');
+            return;
+        }
+        onConfirm(selectedFlavors);
+        closeModal();
     });
 }
 
@@ -579,13 +648,15 @@ function setupProductEvents() {
             }
         }
 
-        // Seleccionar promoción
+        // Seleccionar promoción: abre modal
         const selectPromoBtn = e.target.closest('.select-promo');
         if (selectPromoBtn) {
             const key = selectPromoBtn.dataset.key;
             const promo = promotions.find(p => p.key === key);
             if (promo && window.addPromoToCartGlobal) {
-                window.addPromoToCartGlobal(promo);
+                createFlavorModal(promo, (selectedFlavors) => {
+                    window.addPromoToCartGlobal(promo, selectedFlavors);
+                });
             }
         }
     });
