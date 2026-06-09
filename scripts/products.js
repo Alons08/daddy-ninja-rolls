@@ -150,7 +150,7 @@ const products = [
         portion: 12,
         available: true
     },
-    // Bebidas (unidad mínima 1)
+    // Bebidas
     {
         id: 16,
         name: 'Coca Cola 500ml',
@@ -245,7 +245,7 @@ const products = [
     {
         id: 30,
         name: 'Tonkotsu',
-        description: 'Tonkotsu: 16 horas de cocción. Caldo a base de chancho, pollo y res, acompañado de verduras and láminas de cerdo.',
+        description: 'Tonkotsu: 16 horas de cocción. Caldo a base de chancho, pollo y res, acompañado de verduras y láminas de cerdo.',
         image: './images/menu/tonkotsu-ramen.jpg',
         category: 'ramen',
         price: 24.0,
@@ -393,7 +393,7 @@ const products = [
         price: 18.0,
         portion: 1,
         available: true
-    }    ,
+    },
     {
         id: 50,
         name: 'Alitas BBQ (6 unidades)',
@@ -406,37 +406,81 @@ const products = [
     }
 ];
 
-// Hacer el array accesible globalmente
+// Exponer productos globalmente
 window.restaurantProducts = products;
 
-function getProductPrice(product) {
-    return product.price;
-}
+window.restaurantProducts = products;
 
-function getNoResultsMessage(category, searchTerm) {
-    const hasSearchText = Boolean(searchTerm.trim());
+// Promociones disponibles (igual que antes)
+const promotions = [
+    { key: 'wednesday-3x2', title: 'OFERTA MIÉRCOLES 3x2', text: '3 tablas de 12 cortes por S/40', makiCount: 3, price: 40, onlyOn: 3 },
+    { key: 'bundle-48', title: 'Bundle 48', text: '48 cortes — S/70', makiCount: 4, price: 70 },
+    { key: 'bundle-36', title: 'Bundle 36', text: '36 cortes — S/50 (S/40 los miércoles)', makiCount: 3, price: 50 },
+    { key: 'bundle-24', title: 'Bundle 24', text: '24 cortes — S/36', makiCount: 2, price: 36 },
+    { key: '12+aloe', title: '12 makis + Bebida Japonesa', text: '12 makis + Bebida Japonesa por S/23', makiCount: 1, extras: ['Bebida Japonesa'], price: 23 },
+    { key: '12+poke', title: '12 makis + Poke Bowl', text: '12 makis + Poke Bowl por S/37', makiCount: 1, extras: ['Poke Bowl'], price: 37 },
+    { key: 'sandwich+12', title: 'Sandwich Furai + 12 makis', text: 'Sandwich Furai + 12 makis por S/34', makiCount: 1, extras: ['Sandwich Furai'], price: 34 },
+    { key: '12+crispy', title: '12 makis + Crispy Rice', text: '12 makis + Crispy Rice por S/29', makiCount: 1, extras: ['Crispy Rice'], price: 29 },
+    { key: 'ramen+12', title: 'Ramen + 12 makis', text: 'Ramen + 12 makis por S/39', makiCount: 1, extras: ['Ramen'], price: 39 }
+];
 
-    if (hasSearchText) {
-        return category === 'todos'
-            ? 'No se encontraron productos con ese nombre'
-            : 'No se encontraron productos con ese nombre en esta categoría';
-    }
+window.promotions = promotions;
 
-    return 'No hay productos disponibles en esta categoría';
-}
+// Control anti-doble-clic
+let lastAddedProductId = null;
+let lastAddedTime = 0;
 
+// Renderizar productos según categoría y búsqueda
 function renderProducts(category = 'todos', searchTerm = '') {
     const menuItemsContainer = document.getElementById('menu-items');
     if (!menuItemsContainer) return;
-
     menuItemsContainer.innerHTML = '';
 
-    // Filtrar por categoría (si es 'todos', mostrar todas)
+    // === CATEGORÍA PROMOCIONES (con el mismo diseño que los productos) ===
+    if (category === 'promociones') {
+        const isWednesday = new Date().getDay() === 3;
+        promotions.forEach(promo => {
+            if (promo.onlyOn && promo.onlyOn !== new Date().getDay()) return;
+
+            // Creamos una tarjeta con la misma clase "menu-item"
+            const promoCard = document.createElement('div');
+            promoCard.className = 'menu-item';
+
+            // Imagen genérica (ícono de regalo)
+            const imageHtml = `
+                <div class="item-image" style="display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
+                    <i class="fas fa-tag" style="font-size: 4rem; color: var(--primary-color);"></i>
+                </div>
+            `;
+
+            // Contenido de la tarjeta
+            promoCard.innerHTML = `
+                ${imageHtml}
+                <div class="item-info">
+                    <h3>${promo.title}</h3>
+                    <p class="description">${promo.text}</p>
+                    <span class="price">S/ ${promo.price.toFixed(2)}</span>
+                    <div class="item-actions">
+                        <button class="select-promo" data-key="${promo.key}" style="width:100%; background: var(--primary-color); color:white; border:none; padding:10px; border-radius:30px; cursor:pointer;">
+                            Seleccionar promoción
+                        </button>
+                    </div>
+                </div>
+            `;
+            menuItemsContainer.appendChild(promoCard);
+        });
+
+        if (!menuItemsContainer.innerHTML.trim()) {
+            menuItemsContainer.innerHTML = `<div class="no-products"><i class="fas fa-tag"></i><p>No hay promociones activas por ahora</p></div>`;
+        }
+        return;
+    }
+
+    // === RESTO DE CATEGORÍAS (productos normales) ===
     let filteredProducts = category === 'todos' 
         ? products 
         : products.filter(product => product.category === category);
     
-    // Filtrar por búsqueda (solo en nombre, case-insensitive)
     if (searchTerm.trim()) {
         const lowerSearch = searchTerm.toLowerCase();
         filteredProducts = filteredProducts.filter(product => 
@@ -445,19 +489,12 @@ function renderProducts(category = 'todos', searchTerm = '') {
     }
 
     if (filteredProducts.length === 0) {
-        const noResultsMessage = getNoResultsMessage(category, searchTerm);
-        menuItemsContainer.innerHTML = `
-            <div class="no-products">
-                <i class="fas fa-utensils"></i>
-                <p>${noResultsMessage}</p>
-            </div>
-        `;
+        menuItemsContainer.innerHTML = `<div class="no-products"><i class="fas fa-utensils"></i><p>No hay productos disponibles</p></div>`;
         return;
     }
 
-    const isWednesday = new Date().getDay() === 3;
     filteredProducts.forEach(product => {
-        const price = getProductPrice(product);
+        const price = product.price;
         const productElement = document.createElement('div');
         productElement.className = 'menu-item';
         productElement.innerHTML = `
@@ -485,15 +522,9 @@ function renderProducts(category = 'todos', searchTerm = '') {
         `;
         menuItemsContainer.appendChild(productElement);
     });
-
-    if (category === 'makis' && isWednesday) {
-        const promoBanner = document.createElement('div');
-        promoBanner.className = 'menu-promo-banner';
-        promoBanner.innerHTML = '<strong>OFERTA MIÉRCOLES 3x2:</strong> 3 tablas de 12 cortes por S/40';
-        menuItemsContainer.insertBefore(promoBanner, menuItemsContainer.firstChild);
-    }
 }
 
+// Configurar filtros (igual que antes)
 function setupFilters() {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const searchInput = document.getElementById('search-input');
@@ -501,18 +532,23 @@ function setupFilters() {
         button.addEventListener('click', function() {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
-            if (searchInput) {
-                searchInput.value = '';
-            }
+            if (searchInput) searchInput.value = '';
             renderProducts(this.dataset.category);
         });
     });
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const activeFilter = document.querySelector('.filter-btn.active');
+            const category = activeFilter ? activeFilter.dataset.category : 'todos';
+            renderProducts(category, this.value);
+        });
+    }
 }
 
+// Eventos de productos (incluye anti-doble-clic)
 function setupProductEvents() {
-    // Evento delegado para controles de cantidad y añadir al carrito
     document.addEventListener('click', function(e) {
-        // Control de cantidad (usa unidades en UI)
+        // Control de cantidad (productos normales)
         const quantityBtn = e.target.closest('.quantity-btn');
         if (quantityBtn) {
             const input = quantityBtn.parentElement.querySelector('.quantity-input');
@@ -525,30 +561,56 @@ function setupProductEvents() {
                 value = value + step;
             }
             input.value = value;
-            return; // Salir para no procesar el clic como add-to-cart
+            return;
         }
 
-        // Evento para añadir al carrito
+        // Botón "Añadir al carrito" (productos normales)
         const addToCartBtn = e.target.closest('.add-to-cart');
         if (addToCartBtn) {
+            e.preventDefault();
+            const now = Date.now();
             const productId = parseInt(addToCartBtn.dataset.id);
+            if (lastAddedProductId === productId && (now - lastAddedTime) < 500) {
+                console.log('Ignorando doble clic rápido');
+                return;
+            }
+            lastAddedProductId = productId;
+            lastAddedTime = now;
+
             const product = window.restaurantProducts.find(p => p.id === productId);
             if (product) {
                 const quantityInput = addToCartBtn.closest('.item-actions').querySelector('.quantity-input');
                 const units = parseInt(quantityInput.value) || product.portion;
                 const tables = Math.max(1, Math.floor(units / product.portion));
-                // Usar el precio correcto según el día
-                const price = getProductPrice(product);
-                // Disparar evento personalizado con la cantidad en tablas y precio correcto
-                const event = new CustomEvent('productAddedToCart', {
-                    detail: { product: { ...product, price }, quantity: tables }
-                });
-                document.dispatchEvent(event);
+                if (window.addToCartGlobal) {
+                    window.addToCartGlobal({ ...product, price: product.price }, tables);
+                } else {
+                    const event = new CustomEvent('productAddedToCart', {
+                        detail: { product: { ...product, price: product.price }, quantity: tables }
+                    });
+                    document.dispatchEvent(event);
+                }
+            }
+        }
+
+        // Botón "Seleccionar promoción" (dentro de las tarjetas de promociones)
+        const selectPromoBtn = e.target.closest('.select-promo');
+        if (selectPromoBtn) {
+            const key = selectPromoBtn.dataset.key;
+            const promo = promotions.find(p => p.key === key);
+            if (promo) {
+                if (window.addPromoToCartGlobal) {
+                    window.addPromoToCartGlobal(promo);
+                } else {
+                    const event = new CustomEvent('promoSelected', { detail: { promo } });
+                    document.dispatchEvent(event);
+                }
             }
         }
     });
 }
 
+// Inicializar
 function initProducts() {
     renderProducts('todos');
     setupFilters();

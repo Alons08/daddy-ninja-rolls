@@ -251,9 +251,9 @@ body {
 
 .menu-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Reduje de 300px a 280px */
-    gap: 25px; /* Reduje el gap de 30px a 25px */
-    margin-top: 30px; /* Reduje de 40px a 30px */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
 }
 
 .menu-item {
@@ -264,7 +264,7 @@ body {
     transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
-    height: 100%; /* Asegura que todas las cajas tengan la misma altura */
+    height: 100%;
 }
 
 .menu-item:hover {
@@ -272,7 +272,7 @@ body {
 }
 
 .item-image {
-    height: 200px; /* Mantengo la misma altura para las imágenes */
+    height: 200px;
     overflow: hidden;
     position: relative;
 }
@@ -301,30 +301,30 @@ body {
 }
 
 .item-info {
-    padding: 15px; /* Reduje de 20px a 15px */
+    padding: 15px;
     text-align: left;
-    flex: 1; /* Hace que ocupe el espacio restante */
+    flex: 1;
     display: flex;
     flex-direction: column;
 }
 
 .item-info h3 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.2rem; /* Reduje de 1.3rem a 1.2rem */
-    margin-bottom: 8px; /* Reduje de 10px a 8px */
+    font-size: 1.2rem;
+    margin-bottom: 8px;
     color: var(--black);
 }
 
 .description {
     color: var(--gray);
-    margin-bottom: 12px; /* Reduje de 15px a 12px */
-    font-size: 0.9rem; /* Reduje de 0.95rem a 0.9rem */
-    flex: 1; /* Hace que la descripción ocupe el espacio disponible */
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    flex: 1;
 }
 
 .price {
     font-weight: 700;
-    font-size: 1.1rem; /* Reduje de 1.2rem a 1.1rem */
+    font-size: 1.1rem;
     color: var(--primary-dark);
     margin-bottom: 15px;
     display: block;
@@ -334,7 +334,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: auto; /* Empuja los botones hacia abajo */
+    margin-top: auto;
 }
 
 .portion {
@@ -344,96 +344,60 @@ body {
     margin-left: 6px;
 }
 
-.menu-promo-banner {
-    grid-column: 1 / -1;
-    background: linear-gradient(90deg, #17a2b8, #0f8fae);
-    color: #fff;
-    border-radius: 10px;
-    padding: 16px 20px;
+/* ========== ESTILOS PARA LA SECCIÓN DE PROMOCIONES (CARTA) ========== */
+.menu-promo-item {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s;
     text-align: center;
-    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    border: 1px solid rgba(214, 1, 7, 0.15);
+}
+
+.menu-promo-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    border-color: var(--primary-color);
+}
+
+.menu-promo-item h3 {
+    color: var(--primary-dark);
+    font-size: 1.4rem;
+    margin-bottom: 12px;
     font-weight: 700;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-/* Ajustes responsivos para la barra de promoción en móvil */
-@media (max-width: 480px) {
-    .menu-promo-banner {
-        padding: 10px 12px;
-        font-size: 0.88rem;
-        border-radius: 8px;
-        line-height: 1.2;
-    }
-    .menu-promo-banner strong {
-        display: block;
-        font-size: 0.95rem;
-        margin-bottom: 4px;
-    }
 }
 
-.cart-discount-note {
-    margin-top: 8px;
-    font-size: 0.95rem;
-    color: var(--success-color);
-    font-weight: 600;
-    flex-basis: 100%;
-    order: 2;
-    display: block;
-    width: 100%;
-    text-align: left;
-}
-
-.quantity-control {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 30px;
-    padding: 5px;
-}
-
-.quantity-btn {
-    background: none;
-    border: none;
-    width: 30px;
-    height: 30px;
+.menu-promo-item p {
     font-size: 1rem;
-    cursor: pointer;
-    color: var(--black);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--gray);
+    margin-bottom: 20px;
+    line-height: 1.4;
 }
 
-.quantity-input {
-    width: 40px;
-    text-align: center;
-    border: none;
-    background: none;
-    font-weight: 500;
-    font-size: 1rem;
-}
-
-.add-to-cart {
-    background: var(--primary-color);
-    color: var(--white);
+.menu-promo-item .select-promo {
+    background-color: var(--primary-color);
+    color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 30px;
-    cursor: pointer;
     font-weight: 600;
-    transition: background 0.3s;
-    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+    align-self: center;
+    width: 80%;
 }
 
-.add-to-cart:hover {
-    background: var(--primary-dark);
+.menu-promo-item .select-promo:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
-.add-to-cart:disabled {
-    background: var(--disabled-color);
-    cursor: not-allowed;
-}
-
-
 
 /* Contact Section */
 .contact {
@@ -928,7 +892,7 @@ body {
 
 /* Campos de entrega */
 .delivery-fields {
-    display: none; /*AGREGADO RECIEN*/
+    display: none;
     margin-top: 10px;
     padding: 15px;
     background-color: rgba(214, 1, 7, 0.05);
@@ -942,17 +906,17 @@ body {
 }
 
 .radio-group {
-    display: flex; /* Coloca los radios en una sola línea */
-    gap: 15px; /* Espaciado horizontal entre los radios */
+    display: flex;
+    gap: 15px;
 }
 
 .radio-group label {
-    display: inline-flex; /* Asegura que el texto y el radio estén alineados */
-    align-items: center; /* Centra verticalmente el texto y el botón */
-    gap: 5px; /* Espaciado entre el botón y el texto */
-    padding: 0; /* Elimina el cuadro alrededor */
-    border: none; /* Elimina los bordes */
-    background: none; /* Elimina el fondo */
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: none;
 }
 
 .radio-group label:hover {
@@ -1049,6 +1013,105 @@ body {
     background-color: var(--danger-color);
 }
 
+/* ========== ESTILOS PARA PROMOCIONES EN EL CARRITO ========== */
+.cart-item.promo-item {
+    display: block;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.cart-item.promo-item .cart-item-info {
+    margin-bottom: 10px;
+}
+
+.cart-item.promo-item .cart-item-info strong {
+    font-size: 1rem;
+    color: var(--primary-dark);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.flavor-selector {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    padding-left: 8px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.flavor-selector label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.flavor-selector select {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: var(--white);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.flavor-selector select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(214, 1, 7, 0.2);
+}
+
+.promo-extras {
+    background-color: rgba(214, 1, 7, 0.05);
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin: 12px 0 10px 0;
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.promo-extras strong {
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.promo-remove {
+    background-color: transparent;
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.promo-remove:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.promo-remove i {
+    font-size: 0.8rem;
+}
+
+.promo-flavors-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 8px 0 4px 0;
+    color: var(--gray);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .navbar {
@@ -1057,15 +1120,15 @@ body {
     
     .nav-links {
         position: fixed;
-        top: 70px; /* Ajusta esto según la altura de tu navbar */
+        top: 70px;
         left: -100%;
         width: 100%;
-        height: calc(100vh - 70px); /* Ajusta para que coincida con el top */
+        height: calc(100vh - 70px);
         background-color: var(--primary-dark);
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding-top: 0; /* Elimina el padding superior */
+        padding-top: 0;
         transition: left 0.3s ease;
         margin: 0;
     }
@@ -1078,7 +1141,7 @@ body {
         margin-left: 0;
         width: 100%;
         text-align: center;
-        padding: 12px 0; /* Ajusta el padding vertical */
+        padding: 12px 0;
         border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
@@ -1086,7 +1149,7 @@ body {
         color: var(--white) !important;
         display: block;
         width: 100%;
-        padding: 10px 0; /* Ajusta el padding */
+        padding: 10px 0;
     }
     
     .nav-links a:hover {
@@ -1180,21 +1243,38 @@ body {
     }
     
     .radio-group {
-        display: flex; /* Coloca los radios en una sola línea */
-        gap: 15px; /* Espaciado horizontal entre los radios */
+        display: flex;
+        gap: 15px;
     }
 
     .radio-group label {
-        display: inline-flex; /* Asegura que el texto y el radio estén alineados */
-        align-items: center; /* Centra verticalmente el texto y el botón */
-        gap: 5px; /* Espaciado entre el botón y el texto */
-        padding: 0; /* Elimina el cuadro alrededor */
-        border: none; /* Elimina los bordes */
-        background: none; /* Elimina el fondo */
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0;
+        border: none;
+        background: none;
     }
     
     .delivery-fields {
         padding: 10px;
+    }
+
+    /* Estilos promos responsive */
+    .flavor-selector label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .flavor-selector select {
+        width: 100%;
+    }
+    .promo-remove {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    .menu-promo-item .select-promo {
+        width: 100%;
     }
 }
 
@@ -1263,6 +1343,13 @@ body {
     .social-icons {
         justify-content: center;
     }
+
+    .menu-promo-item h3 {
+        font-size: 1.2rem;
+    }
+    .menu-promo-item p {
+        font-size: 0.9rem;
+    }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -1322,4 +1409,4 @@ body {
 /* TikTok icon blanco en el footer */
 .social-icons a.tiktok-icon {
     color: #fff !important;
-} 
+}
