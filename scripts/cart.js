@@ -1,6 +1,6 @@
 let cart = [];
 let cartExpirationTimer = null;
-const CART_TTL = 20 * 60 * 1000; // 20 minutos
+const CART_TTL = 20 * 60 * 1000;
 
 const cartElements = {
     btn: null, modal: null, overlay: null, items: null, total: null, count: null,
@@ -109,11 +109,10 @@ function goToCheckout() {
         showNotification('El carrito está vacío', 'error');
         return;
     }
-    for (let item of cart) {
-        if (item.type === 'promo' && item.makiCount > 0 && item.flavors.some(f => f === null)) {
-            showNotification('Por favor selecciona todos los sabores de los makis en las promociones', 'error');
-            return;
-        }
+    if (!validateFlavorsAndMarkErrors()) {
+        const firstError = document.querySelector('.flavor-error-message, .promo-general-error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
     }
     cartElements.step1.classList.remove('active');
     cartElements.step2.classList.add('active');
@@ -124,7 +123,6 @@ function backToCart() {
     cartElements.step1.classList.add('active');
 }
 
-// Agregar producto normal (sin promoción)
 function addToCart(product, quantity = 1) {
     const existing = cart.find(i => i.type === 'product' && i.product.id === product.id);
     if (existing) {
@@ -133,10 +131,9 @@ function addToCart(product, quantity = 1) {
         cart.push({ type: 'product', product, quantity });
     }
     updateCart();
-    showNotification(`${product.name} añadido al carrito (${quantity} tabla(s))`, 'success');
+    showNotification(`${product.name} añadido al carrito (${quantity} unidad(es))`, 'success');
 }
 
-// Agregar promoción especial
 function addPromoToCart(promo) {
     const existing = cart.find(i => i.type === 'promo' && i.promoKey === promo.key);
     if (existing) {
@@ -159,7 +156,6 @@ function addPromoToCart(promo) {
     showNotification(`${promo.title} agregada al carrito. Elige los sabores.`, 'success');
 }
 
-// Exponer funciones globalmente para que products.js las use directamente
 window.addToCartGlobal = addToCart;
 window.addPromoToCartGlobal = addPromoToCart;
 
@@ -181,17 +177,25 @@ function updateCart() {
         if (item.type === 'product') {
             total += item.product.price * item.quantity;
             const unitsValue = item.quantity * item.product.portion;
+            
+            let porcionTexto = '';
+            if (item.product.category === 'makis') {
+                porcionTexto = `por ${item.product.portion} cortes`;
+            } else {
+                porcionTexto = 'por unidad';
+            }
+            
             const cartItemDiv = document.createElement('div');
             cartItemDiv.className = 'cart-item';
             cartItemDiv.innerHTML = `
                 <div class="cart-item-info">
-                    <h4>${item.product.name}</h4>
-                    <p>S/${item.product.price.toFixed(2)} por tabla</p>
+                    <h4>${escapeHtml(item.product.name)}</h4>
+                    <p>S/${item.product.price.toFixed(2)} ${porcionTexto}</p>
                 </div>
                 <div class="cart-item-actions">
                     <div class="quantity-control">
                         <button class="quantity-btn minus" data-idx="${idx}" data-type="product">-</button>
-                        <input type="number" class="quantity-input" value="${unitsValue}" min="${item.product.portion}" step="${item.product.portion}" data-idx="${idx}" data-type="product">
+                        <span class="quantity-value" data-idx="${idx}" data-type="product">${unitsValue}</span>
                         <button class="quantity-btn plus" data-idx="${idx}" data-type="product">+</button>
                     </div>
                     <button class="remove-item" data-idx="${idx}" data-type="product">
@@ -205,20 +209,27 @@ function updateCart() {
             total += item.price;
             const promoDiv = document.createElement('div');
             promoDiv.className = 'cart-item promo-item';
-            let promoHtml = `<div class="cart-item-info"><strong>${item.title}</strong><br>Precio: S/${item.price.toFixed(2)}<br>`;
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'cart-item-info';
+            infoDiv.innerHTML = `<strong>${escapeHtml(item.title)}</strong><p>S/${item.price.toFixed(2)}</p>`;
+            promoDiv.appendChild(infoDiv);
+            
+            const detailsDiv = document.createElement('div');
+            detailsDiv.className = 'promo-details';
+            detailsDiv.setAttribute('data-promo-idx', idx);
+            
             if (item.makiCount > 0) {
-                promoHtml += `<div class="promo-flavors-title">Incluye ${item.makiCount} tabla(s) de 12 cortes. Elige los sabores:</div>`;
-            }
-            promoHtml += `</div>`;
-            promoDiv.innerHTML = promoHtml;
-
-            if (item.makiCount > 0) {
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'promo-flavors-title';
+                titleDiv.textContent = `Elija los sabores de ${item.makiCount} ${item.makiCount === 1 ? 'tabla' : 'tablas'} de 12 cortes:`;
+                detailsDiv.appendChild(titleDiv);
+                
                 for (let i = 0; i < item.makiCount; i++) {
                     const selectedId = item.flavors[i] || '';
-                    const options = makis12.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${m.name}</option>`).join('');
+                    const options = makis12.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${escapeHtml(m.name)}</option>`).join('');
                     const selectorDiv = document.createElement('div');
                     selectorDiv.className = 'flavor-selector';
-                    selectorDiv.style.marginTop = '8px';
                     selectorDiv.innerHTML = `
                         <label>Maki ${i+1}: 
                             <select class="promo-flavor-select" data-idx="${idx}" data-pos="${i}">
@@ -227,26 +238,30 @@ function updateCart() {
                             </select>
                         </label>
                     `;
-                    promoDiv.appendChild(selectorDiv);
+                    detailsDiv.appendChild(selectorDiv);
                 }
             }
-
+            
             if (item.extras && item.extras.length) {
-                const extrasDiv = document.createElement('div');
-                extrasDiv.className = 'promo-extras';
-                extrasDiv.style.marginTop = '8px';
-                extrasDiv.style.fontSize = '0.9em';
-                extrasDiv.innerHTML = `<strong>Incluye además:</strong> ${item.extras.join(', ')}`;
-                promoDiv.appendChild(extrasDiv);
+                const titleLower = item.title.toLowerCase();
+                const shouldShowExtras = !item.extras.some(extra => 
+                    titleLower.includes(extra.toLowerCase())
+                );
+                if (shouldShowExtras) {
+                    const extrasDiv = document.createElement('div');
+                    extrasDiv.className = 'promo-extras';
+                    extrasDiv.innerHTML = `<strong>Incluye además:</strong> ${item.extras.join(', ')}`;
+                    detailsDiv.appendChild(extrasDiv);
+                }
             }
-
+            
             const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-item promo-remove';
+            removeBtn.className = 'promo-remove';
             removeBtn.setAttribute('data-idx', idx);
-            removeBtn.setAttribute('data-type', 'promo');
-            removeBtn.style.marginTop = '12px';
             removeBtn.innerHTML = '<i class="fas fa-trash"></i> Eliminar promoción';
-            promoDiv.appendChild(removeBtn);
+            detailsDiv.appendChild(removeBtn);
+            
+            promoDiv.appendChild(detailsDiv);
             cartElements.items.appendChild(promoDiv);
         }
     });
@@ -257,22 +272,37 @@ function updateCart() {
     attachCartItemEvents();
 }
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
 function attachCartItemEvents() {
     document.querySelectorAll('.cart-item .quantity-btn').forEach(btn => {
         btn.removeEventListener('click', handleQuantityClick);
         btn.addEventListener('click', handleQuantityClick);
     });
-    document.querySelectorAll('.cart-item .quantity-input').forEach(input => {
-        input.removeEventListener('change', handleQuantityChange);
-        input.addEventListener('change', handleQuantityChange);
-    });
-    document.querySelectorAll('.remove-item').forEach(btn => {
+    document.querySelectorAll('.remove-item, .promo-remove').forEach(btn => {
         btn.removeEventListener('click', handleRemoveClick);
         btn.addEventListener('click', handleRemoveClick);
     });
     document.querySelectorAll('.promo-flavor-select').forEach(select => {
         select.removeEventListener('change', handleFlavorChange);
         select.addEventListener('change', handleFlavorChange);
+        select.addEventListener('change', function() {
+            this.classList.remove('invalid-flavor');
+            const parentSelector = this.closest('.flavor-selector');
+            const errorSpan = parentSelector?.querySelector('.flavor-error-message');
+            if (errorSpan) errorSpan.remove();
+            const promoDetails = this.closest('.promo-details');
+            const generalError = promoDetails?.querySelector('.promo-general-error');
+            if (generalError) generalError.remove();
+        });
     });
 }
 
@@ -281,56 +311,31 @@ function handleQuantityClick(e) {
     const idx = parseInt(btn.dataset.idx);
     const type = btn.dataset.type;
     if (type !== 'product') return;
-    const input = btn.parentElement.querySelector('.quantity-input');
-    let units = parseInt(input.value) || 1;
-    const step = parseInt(input.step) || 1;
-    const min = parseInt(input.min) || step;
+    const valueSpan = btn.parentElement.querySelector('.quantity-value');
+    let units = parseInt(valueSpan.textContent) || 1;
+    const item = cart[idx];
+    if (!item || item.type !== 'product') return;
+    const step = item.product.portion;
+    const min = step;
     if (btn.classList.contains('minus')) {
         units = Math.max(min, units - step);
     } else {
         units = units + step;
     }
-    input.value = units;
-    const item = cart[idx];
-    if (item && item.type === 'product') {
-        const tables = Math.max(1, Math.floor(units / item.product.portion));
-        item.quantity = tables;
-        updateCart();
-    }
-}
-
-function handleQuantityChange(e) {
-    const input = e.currentTarget;
-    const idx = parseInt(input.dataset.idx);
-    const type = input.dataset.type;
-    if (type !== 'product') return;
-    let units = parseInt(input.value) || 1;
-    const min = parseInt(input.min) || 1;
-    units = Math.max(units, min);
-    input.value = units;
-    const item = cart[idx];
-    if (item && item.type === 'product') {
-        const tables = Math.max(1, Math.floor(units / item.product.portion));
-        item.quantity = tables;
-        updateCart();
-    }
+    valueSpan.textContent = units;
+    const tables = Math.max(1, Math.floor(units / item.product.portion));
+    item.quantity = tables;
+    updateCart();
 }
 
 function handleRemoveClick(e) {
     const btn = e.currentTarget;
-    const idx = parseInt(btn.dataset.idx);
-    const type = btn.dataset.type;
-    if (!isNaN(idx) && type) {
-        cart.splice(idx, 1);
-        updateCart();
-    } else {
-        const promoRemove = btn.closest('.promo-remove');
-        if (promoRemove && promoRemove.dataset.idx) {
-            const idxPromo = parseInt(promoRemove.dataset.idx);
-            if (!isNaN(idxPromo)) {
-                cart.splice(idxPromo, 1);
-                updateCart();
-            }
+    let idx = btn.getAttribute('data-idx');
+    if (idx !== null) {
+        idx = parseInt(idx);
+        if (!isNaN(idx)) {
+            cart.splice(idx, 1);
+            updateCart();
         }
     }
 }
@@ -341,13 +346,62 @@ function handleFlavorChange(e) {
     const pos = parseInt(select.dataset.pos);
     const selectedMakiId = parseInt(select.value);
     if (cart[idx] && cart[idx].type === 'promo') {
-        if (selectedMakiId) {
-            cart[idx].flavors[pos] = selectedMakiId;
-        } else {
-            cart[idx].flavors[pos] = null;
-        }
+        cart[idx].flavors[pos] = selectedMakiId || null;
         saveCartWithTimestamp();
     }
+}
+
+function validateFlavorsAndMarkErrors() {
+    let hasMissing = false;
+    document.querySelectorAll('.flavor-error-message, .promo-general-error').forEach(el => el.remove());
+    document.querySelectorAll('.promo-flavor-select').forEach(select => {
+        select.classList.remove('invalid-flavor');
+    });
+    
+    for (let i = 0; i < cart.length; i++) {
+        const item = cart[i];
+        if (item.type === 'promo' && item.makiCount > 0) {
+            let missingInThisPromo = false;
+            for (let j = 0; j < item.flavors.length; j++) {
+                if (item.flavors[j] === null) {
+                    hasMissing = true;
+                    missingInThisPromo = true;
+                    const selector = document.querySelector(`.promo-flavor-select[data-idx="${i}"][data-pos="${j}"]`);
+                    if (selector) {
+                        selector.classList.add('invalid-flavor');
+                        const parentSelector = selector.closest('.flavor-selector');
+                        if (parentSelector && !parentSelector.querySelector('.flavor-error-message')) {
+                            const errorSpan = document.createElement('span');
+                            errorSpan.className = 'flavor-error-message';
+                            errorSpan.style.display = 'block';
+                            errorSpan.style.color = 'var(--danger-color)';
+                            errorSpan.style.fontSize = '0.75rem';
+                            errorSpan.style.marginTop = '4px';
+                            errorSpan.style.marginLeft = '8px';
+                            errorSpan.textContent = 'Por favor selecciona un sabor';
+                            parentSelector.appendChild(errorSpan);
+                        }
+                    }
+                }
+            }
+            if (missingInThisPromo) {
+                const promoDetails = document.querySelector(`.promo-details[data-promo-idx="${i}"]`);
+                if (promoDetails && !promoDetails.querySelector('.promo-general-error')) {
+                    const generalError = document.createElement('div');
+                    generalError.className = 'promo-general-error';
+                    generalError.style.color = 'var(--danger-color)';
+                    generalError.style.fontSize = '0.8rem';
+                    generalError.style.marginTop = '8px';
+                    generalError.style.padding = '4px 8px';
+                    generalError.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+                    generalError.style.borderRadius = '8px';
+                    generalError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Debes elegir todos los sabores para esta promoción';
+                    promoDetails.appendChild(generalError);
+                }
+            }
+        }
+    }
+    return !hasMissing;
 }
 
 function submitOrder() {
@@ -355,11 +409,10 @@ function submitOrder() {
         showNotification('El carrito está vacío', 'error');
         return;
     }
-    for (let item of cart) {
-        if (item.type === 'promo' && item.makiCount > 0 && item.flavors.some(f => f === null)) {
-            showNotification('Por favor selecciona todos los sabores de los makis en las promociones', 'error');
-            return;
-        }
+    if (!validateFlavorsAndMarkErrors()) {
+        const firstError = document.querySelector('.flavor-error-message, .promo-general-error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
     }
     if (!validateForm()) return;
 
@@ -392,20 +445,32 @@ function submitOrder() {
         if (item.type === 'product') {
             const subtotal = item.product.price * item.quantity;
             total += subtotal;
-            message += `- ${item.product.name} (x${item.quantity}): S/${subtotal.toFixed(2)}\n`;
-        } else if (item.type === 'promo') {
+            const cortesText = item.product.category === 'makis' ? ` (${item.product.portion} cortes)` : '';
+            message += `- ${item.product.name}${cortesText} x${item.quantity}: S/${subtotal.toFixed(2)}\n`;
+        } 
+        else if (item.type === 'promo') {
             total += item.price;
-            message += `- ${item.title} (S/${item.price.toFixed(2)})\n`;
+            const tablaTexto = item.makiCount === 1 ? '1 tabla' : `${item.makiCount} tablas`;
+            message += `- ${item.title} (Promoción) - ${tablaTexto} de 12 cortes: S/${item.price.toFixed(2)}\n`;
             if (item.makiCount > 0) {
-                message += `  *Makis incluidos:*\n`;
+                const sabores = [];
                 for (let i = 0; i < item.flavors.length; i++) {
                     const flavorId = item.flavors[i];
                     const flavor = makis12.find(m => m.id === flavorId);
-                    if (flavor) message += `    • Maki ${i+1}: ${flavor.name}\n`;
+                    if (flavor) sabores.push(flavor.name);
+                }
+                if (sabores.length > 0) {
+                    message += `  Sabores: ${sabores.join(', ')}\n`;
                 }
             }
             if (item.extras && item.extras.length) {
-                message += `  *Además:* ${item.extras.join(', ')}\n`;
+                const titleLower = item.title.toLowerCase();
+                const shouldShowExtras = !item.extras.some(extra => 
+                    titleLower.includes(extra.toLowerCase())
+                );
+                if (shouldShowExtras) {
+                    message += `  *Además:* ${item.extras.join(', ')}\n`;
+                }
             }
         }
     }

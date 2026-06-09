@@ -406,211 +406,191 @@ const products = [
     }
 ];
 
-// Exponer productos globalmente
 window.restaurantProducts = products;
 
-window.restaurantProducts = products;
-
-// Promociones disponibles (igual que antes)
+// Array de promociones
 const promotions = [
     { key: 'wednesday-3x2', title: 'OFERTA MIÉRCOLES 3x2', text: '3 tablas de 12 cortes por S/40', makiCount: 3, price: 40, onlyOn: 3 },
-    { key: 'bundle-48', title: 'Bundle 48', text: '48 cortes — S/70', makiCount: 4, price: 70 },
-    { key: 'bundle-36', title: 'Bundle 36', text: '36 cortes — S/50 (S/40 los miércoles)', makiCount: 3, price: 50 },
-    { key: 'bundle-24', title: 'Bundle 24', text: '24 cortes — S/36', makiCount: 2, price: 36 },
-    { key: '12+aloe', title: '12 makis + Bebida Japonesa', text: '12 makis + Bebida Japonesa por S/23', makiCount: 1, extras: ['Bebida Japonesa'], price: 23 },
-    { key: '12+poke', title: '12 makis + Poke Bowl', text: '12 makis + Poke Bowl por S/37', makiCount: 1, extras: ['Poke Bowl'], price: 37 },
-    { key: 'sandwich+12', title: 'Sandwich Furai + 12 makis', text: 'Sandwich Furai + 12 makis por S/34', makiCount: 1, extras: ['Sandwich Furai'], price: 34 },
-    { key: '12+crispy', title: '12 makis + Crispy Rice', text: '12 makis + Crispy Rice por S/29', makiCount: 1, extras: ['Crispy Rice'], price: 29 },
-    { key: 'ramen+12', title: 'Ramen + 12 makis', text: 'Ramen + 12 makis por S/39', makiCount: 1, extras: ['Ramen'], price: 39 }
+    { key: 'bundle-48', title: '48 Makis', text: '4 tablas de 12 cortes — S/70', makiCount: 4, price: 70 },
+    { key: 'bundle-36', title: '36 Makis', text: '3 tablas de 12 cortes — S/50 (S/40 los miércoles)', makiCount: 3, price: 50 },
+    { key: 'bundle-24', title: '24 Makis', text: '2 tablas de 12 cortes — S/36', makiCount: 2, price: 36 },
+    { key: '12+aloe', title: '12 Makis + Bebida Japonesa', text: '1 tabla de 12 cortes + Bebida Japonesa — S/23', makiCount: 1, extras: ['Bebida Japonesa'], price: 23 },
+    { key: '12+poke', title: '12 Makis + Poke Bowl', text: '1 tabla de 12 cortes + Poke Bowl — S/37', makiCount: 1, extras: ['Poke Bowl'], price: 37 },
+    { key: 'sandwich+12', title: 'Sandwich Furai + 12 Makis', text: 'Sandwich Furai + 1 tabla de 12 cortes — S/34', makiCount: 1, extras: ['Sandwich Furai'], price: 34 },
+    { key: '12+crispy', title: '12 Makis + Crispy Rice', text: '1 tabla de 12 cortes + Crispy Rice — S/29', makiCount: 1, extras: ['Crispy Rice'], price: 29 },
+    { key: 'ramen+12', title: 'Ramen + 12 Makis', text: 'Ramen + 1 tabla de 12 cortes — S/39', makiCount: 1, extras: ['Ramen'], price: 39 }
 ];
 
 window.promotions = promotions;
 
-// Control anti-doble-clic
 let lastAddedProductId = null;
 let lastAddedTime = 0;
 
-// Renderizar productos según categoría y búsqueda
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
 function renderProducts(category = 'todos', searchTerm = '') {
     const menuItemsContainer = document.getElementById('menu-items');
     if (!menuItemsContainer) return;
     menuItemsContainer.innerHTML = '';
 
-    // === CATEGORÍA PROMOCIONES (con el mismo diseño que los productos) ===
     if (category === 'promociones') {
-        const isWednesday = new Date().getDay() === 3;
+        const today = new Date().getDay();
         promotions.forEach(promo => {
-            if (promo.onlyOn && promo.onlyOn !== new Date().getDay()) return;
+            if (promo.onlyOn && promo.onlyOn !== today) return;
 
-            // Creamos una tarjeta con la misma clase "menu-item"
             const promoCard = document.createElement('div');
             promoCard.className = 'menu-item';
-
-            // Imagen genérica (ícono de regalo)
-            const imageHtml = `
-                <div class="item-image" style="display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
-                    <i class="fas fa-tag" style="font-size: 4rem; color: var(--primary-color);"></i>
-                </div>
-            `;
-
-            // Contenido de la tarjeta
             promoCard.innerHTML = `
-                ${imageHtml}
+                <div class="item-image" style="display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
+                    <i class="fas fa-gift" style="font-size: 4rem; color: var(--primary-color);"></i>
+                </div>
                 <div class="item-info">
-                    <h3>${promo.title}</h3>
-                    <p class="description">${promo.text}</p>
+                    <h3>${escapeHtml(promo.title)}</h3>
+                    <p class="description">${escapeHtml(promo.text)}</p>
                     <span class="price">S/ ${promo.price.toFixed(2)}</span>
                     <div class="item-actions">
-                        <button class="select-promo" data-key="${promo.key}" style="width:100%; background: var(--primary-color); color:white; border:none; padding:10px; border-radius:30px; cursor:pointer;">
-                            Seleccionar promoción
-                        </button>
+                        <button class="select-promo" data-key="${promo.key}">Seleccionar promoción</button>
                     </div>
                 </div>
             `;
             menuItemsContainer.appendChild(promoCard);
         });
 
-        if (!menuItemsContainer.innerHTML.trim()) {
-            menuItemsContainer.innerHTML = `<div class="no-products"><i class="fas fa-tag"></i><p>No hay promociones activas por ahora</p></div>`;
+        if (menuItemsContainer.children.length === 0) {
+            menuItemsContainer.innerHTML = '<div class="no-products"><i class="fas fa-tag"></i><p>No hay promociones activas por ahora</p></div>';
         }
         return;
     }
 
-    // === RESTO DE CATEGORÍAS (productos normales) ===
-    let filteredProducts = category === 'todos' 
-        ? products 
-        : products.filter(product => product.category === category);
-    
+    // Resto de categorías (productos normales)
+    let filteredProducts = category === 'todos'
+        ? products
+        : products.filter(p => p.category === category);
+
     if (searchTerm.trim()) {
-        const lowerSearch = searchTerm.toLowerCase();
-        filteredProducts = filteredProducts.filter(product => 
-            product.name.toLowerCase().includes(lowerSearch)
-        );
+        const lower = searchTerm.toLowerCase();
+        filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(lower));
     }
 
     if (filteredProducts.length === 0) {
-        menuItemsContainer.innerHTML = `<div class="no-products"><i class="fas fa-utensils"></i><p>No hay productos disponibles</p></div>`;
+        menuItemsContainer.innerHTML = '<div class="no-products"><i class="fas fa-utensils"></i><p>No hay productos disponibles</p></div>';
         return;
     }
 
     filteredProducts.forEach(product => {
-        const price = product.price;
-        const productElement = document.createElement('div');
-        productElement.className = 'menu-item';
-        productElement.innerHTML = `
+        const productEl = document.createElement('div');
+        productEl.className = 'menu-item';
+        productEl.innerHTML = `
             <div class="item-image">
-                <img src="${product.image}" alt="${product.name}" loading="lazy">
+                <img src="${product.image}" alt="${escapeHtml(product.name)}" loading="lazy">
                 ${!product.available ? '<span class="sold-out">Agotado</span>' : ''}
             </div>
             <div class="item-info">
-                <h3>${product.name}</h3>
-                <p class="description">${product.description}</p>
-                <span class="price">S/ ${price.toFixed(2)} ${product.category === 'makis' ? `<span class="portion">(${product.portion} cortes)</span>` : ''}</span>
+                <h3>${escapeHtml(product.name)}</h3>
+                <p class="description">${escapeHtml(product.description)}</p>
+                <span class="price">S/ ${product.price.toFixed(2)} ${product.category === 'makis' ? `<span class="portion">(${product.portion} cortes)</span>` : ''}</span>
                 ${product.available ? `
                 <div class="item-actions">
                     <div class="quantity-control">
                         <button class="quantity-btn minus" data-id="${product.id}">-</button>
-                        <input type="number" class="quantity-input" value="${product.portion}" min="${product.portion}" step="${product.portion}" data-id="${product.id}">
+                        <span class="quantity-value" data-id="${product.id}">${product.portion}</span>
                         <button class="quantity-btn plus" data-id="${product.id}">+</button>
                     </div>
-                    <button class="add-to-cart" data-id="${product.id}">
-                        Añadir al carrito
-                    </button>
+                    <button class="add-to-cart" data-id="${product.id}">Añadir al carrito</button>
                 </div>
                 ` : ''}
             </div>
         `;
-        menuItemsContainer.appendChild(productElement);
+        menuItemsContainer.appendChild(productEl);
     });
 }
 
-// Configurar filtros (igual que antes)
 function setupFilters() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const filterBtns = document.querySelectorAll('.filter-btn');
     const searchInput = document.getElementById('search-input');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             if (searchInput) searchInput.value = '';
             renderProducts(this.dataset.category);
         });
     });
+
     if (searchInput) {
         searchInput.addEventListener('input', function() {
-            const activeFilter = document.querySelector('.filter-btn.active');
-            const category = activeFilter ? activeFilter.dataset.category : 'todos';
-            renderProducts(category, this.value);
+            const active = document.querySelector('.filter-btn.active');
+            const cat = active ? active.dataset.category : 'todos';
+            renderProducts(cat, this.value);
         });
     }
 }
 
-// Eventos de productos (incluye anti-doble-clic)
 function setupProductEvents() {
     document.addEventListener('click', function(e) {
-        // Control de cantidad (productos normales)
-        const quantityBtn = e.target.closest('.quantity-btn');
-        if (quantityBtn) {
-            const input = quantityBtn.parentElement.querySelector('.quantity-input');
-            let value = parseInt(input.value) || parseInt(input.min) || 1;
-            const step = parseInt(input.step) || 1;
-            const min = parseInt(input.min) || step;
-            if (quantityBtn.classList.contains('minus')) {
-                value = Math.max(min, value - step);
+        // Controles de cantidad
+        const btn = e.target.closest('.quantity-btn');
+        if (btn) {
+            const container = btn.closest('.quantity-control');
+            const valueSpan = container.querySelector('.quantity-value');
+            let val = parseInt(valueSpan.textContent) || 1;
+            const productId = parseInt(btn.dataset.id);
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            const step = product.portion;
+            const min = step;
+            if (btn.classList.contains('minus')) {
+                val = Math.max(min, val - step);
             } else {
-                value = value + step;
+                val = val + step;
             }
-            input.value = value;
+            valueSpan.textContent = val;
             return;
         }
 
-        // Botón "Añadir al carrito" (productos normales)
-        const addToCartBtn = e.target.closest('.add-to-cart');
-        if (addToCartBtn) {
-            e.preventDefault();
-            const now = Date.now();
-            const productId = parseInt(addToCartBtn.dataset.id);
-            if (lastAddedProductId === productId && (now - lastAddedTime) < 500) {
-                console.log('Ignorando doble clic rápido');
-                return;
-            }
-            lastAddedProductId = productId;
-            lastAddedTime = now;
+        // Añadir producto normal al carrito
+        const addBtn = e.target.closest('.add-to-cart');
+        if (addBtn) {
+            const productId = parseInt(addBtn.dataset.id);
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
 
-            const product = window.restaurantProducts.find(p => p.id === productId);
-            if (product) {
-                const quantityInput = addToCartBtn.closest('.item-actions').querySelector('.quantity-input');
-                const units = parseInt(quantityInput.value) || product.portion;
-                const tables = Math.max(1, Math.floor(units / product.portion));
-                if (window.addToCartGlobal) {
-                    window.addToCartGlobal({ ...product, price: product.price }, tables);
-                } else {
-                    const event = new CustomEvent('productAddedToCart', {
-                        detail: { product: { ...product, price: product.price }, quantity: tables }
-                    });
-                    document.dispatchEvent(event);
-                }
+            const container = addBtn.closest('.item-actions').querySelector('.quantity-control');
+            const valueSpan = container.querySelector('.quantity-value');
+            let units = parseInt(valueSpan.textContent) || product.portion;
+            const tables = Math.max(1, Math.floor(units / product.portion));
+
+            if (window.addToCartGlobal) {
+                window.addToCartGlobal({ ...product, price: product.price }, tables);
+            } else {
+                const event = new CustomEvent('productAddedToCart', {
+                    detail: { product: { ...product, price: product.price }, quantity: tables }
+                });
+                document.dispatchEvent(event);
             }
         }
 
-        // Botón "Seleccionar promoción" (dentro de las tarjetas de promociones)
+        // Seleccionar promoción
         const selectPromoBtn = e.target.closest('.select-promo');
         if (selectPromoBtn) {
             const key = selectPromoBtn.dataset.key;
             const promo = promotions.find(p => p.key === key);
-            if (promo) {
-                if (window.addPromoToCartGlobal) {
-                    window.addPromoToCartGlobal(promo);
-                } else {
-                    const event = new CustomEvent('promoSelected', { detail: { promo } });
-                    document.dispatchEvent(event);
-                }
+            if (promo && window.addPromoToCartGlobal) {
+                window.addPromoToCartGlobal(promo);
             }
         }
     });
 }
 
-// Inicializar
 function initProducts() {
     renderProducts('todos');
     setupFilters();
