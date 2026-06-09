@@ -182,50 +182,10 @@ const products = [
         available: true
     },
     {
-        id: 19,
-        name: 'Té Verde (Tetera)',
-        description: 'Té verde en tetera',
-        image: './images/menu/te-verde-tetera.jpg',
-        category: 'bebidas',
-        price: 8.0,
-        portion: 1,
-        available: true
-    },
-    {
-        id: 20,
-        name: 'Té Verde (Taza)',
-        description: 'Té verde por taza',
-        image: './images/menu/te-verde-taza.jpg',
-        category: 'bebidas',
-        price: 2.0,
-        portion: 1,
-        available: true
-    },
-    {
-        id: 21,
-        name: 'Té de Jazmín (Tetera)',
-        description: 'Té de jazmín en tetera',
-        image: './images/menu/te-jazmin-tetera.jpg',
-        category: 'bebidas',
-        price: 8.0,
-        portion: 1,
-        available: true
-    },
-    {
-        id: 22,
-        name: 'Té de Jazmín (Taza)',
-        description: 'Té de jazmín por taza',
-        image: './images/menu/te-jazmin-taza.jpg',
-        category: 'bebidas',
-        price: 2.0,
-        portion: 1,
-        available: true
-    },
-    {
         id: 23,
         name: 'Maracuyá 1L',
         description: 'Jugo de maracuyá 1 litro',
-        image: './images/menu/maracuya-1l.jpg',
+        image: './images/menu/maracuya.jpg',
         category: 'bebidas',
         price: 14.0,
         portion: 1,
@@ -238,16 +198,6 @@ const products = [
         image: './images/menu/chicha-morada.jpg',
         category: 'bebidas',
         price: 14.0,
-        portion: 1,
-        available: true
-    },
-    {
-        id: 25,
-        name: 'Bebida Japonesa de Aloe',
-        description: 'Bebida japonesa de aloe',
-        image: './images/menu/bebida-japonesa-aloe.jpg',
-        category: 'bebidas',
-        price: 3.0,
         portion: 1,
         available: true
     },
