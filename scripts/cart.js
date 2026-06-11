@@ -172,7 +172,7 @@ function updateCart() {
     }
 
     let total = 0;
-    const makis12 = window.restaurantProducts.filter(p => p.category === 'makis' && p.portion === 12);
+    const makis = window.restaurantProducts.filter(p => p.category === 'makis');
 
     cart.forEach((item, idx) => {
         if (item.type === 'product') {
@@ -228,7 +228,7 @@ function updateCart() {
                 
                 for (let i = 0; i < item.makiCount; i++) {
                     const selectedId = item.flavors[i] || '';
-                    const options = makis12.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${escapeHtml(m.name)}</option>`).join('');
+                    const options = makis.map(m => `<option value="${m.id}" ${m.id === selectedId ? 'selected' : ''}>${escapeHtml(m.name)}</option>`).join('');
                     const selectorDiv = document.createElement('div');
                     selectorDiv.className = 'flavor-selector';
                     selectorDiv.innerHTML = `
@@ -440,7 +440,7 @@ function submitOrder() {
     message += `🍽️ *PEDIDO*\n`;
 
     let total = 0;
-    const makis12 = window.restaurantProducts.filter(p => p.category === 'makis' && p.portion === 12);
+    const makis = window.restaurantProducts.filter(p => p.category === 'makis');
 
     for (let item of cart) {
         if (item.type === 'product') {
@@ -457,7 +457,7 @@ function submitOrder() {
                 const sabores = [];
                 for (let i = 0; i < item.flavors.length; i++) {
                     const flavorId = item.flavors[i];
-                    const flavor = makis12.find(m => m.id === flavorId);
+                    const flavor = makis.find(m => m.id === flavorId);
                     if (flavor) sabores.push(flavor.name);
                 }
                 if (sabores.length > 0) {

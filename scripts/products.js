@@ -441,7 +441,7 @@ function createFlavorModal(promo, onConfirm) {
     const existingModal = document.getElementById('flavor-modal');
     if (existingModal) existingModal.remove();
 
-    const makis12 = window.restaurantProducts.filter(p => p.category === 'makis' && p.portion === 12);
+    const makis = window.restaurantProducts.filter(p => p.category === 'makis');
     const makiCount = promo.makiCount;
 
     const modal = document.createElement('div');
@@ -473,7 +473,7 @@ function createFlavorModal(promo, onConfirm) {
     for (let i = 0; i < makiCount; i++) {
         const selectorDiv = document.createElement('div');
         selectorDiv.className = 'flavor-selector-modal';
-        const options = makis12.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+        const options = makis.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
         selectorDiv.innerHTML = `
             <label>Maki ${i+1}: 
                 <select data-index="${i}">
