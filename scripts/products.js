@@ -410,15 +410,16 @@ window.restaurantProducts = products;
 
 // Promociones
 const promotions = [
-    { key: 'wednesday-3x2', title: 'OFERTA MIÉRCOLES 3x2', text: '3 tablas de 12 cortes por S/40', makiCount: 3, price: 40, onlyOn: 3 },
-    { key: 'bundle-48', title: '48 Makis', text: '4 tablas de 12 cortes — S/70', makiCount: 4, price: 70 },
-    { key: 'bundle-36', title: '36 Makis', text: '3 tablas de 12 cortes — S/50 (S/40 los miércoles)', makiCount: 3, price: 50 },
-    { key: 'bundle-24', title: '24 Makis', text: '2 tablas de 12 cortes — S/36', makiCount: 2, price: 36 },
-    { key: '12+aloe', title: '12 Makis + Bebida Japonesa', text: '1 tabla de 12 cortes + Bebida Japonesa — S/23', makiCount: 1, extras: ['Bebida Japonesa'], price: 23 },
-    { key: '12+poke', title: '12 Makis + Poke Bowl', text: '1 tabla de 12 cortes + Poke Bowl — S/37', makiCount: 1, extras: ['Poke Bowl'], price: 37 },
-    { key: 'sandwich+12', title: 'Sandwich Furai + 12 Makis', text: 'Sandwich Furai + 1 tabla de 12 cortes — S/34', makiCount: 1, extras: ['Sandwich Furai'], price: 34 },
-    { key: '12+crispy', title: '12 Makis + Crispy Rice', text: '1 tabla de 12 cortes + Crispy Rice — S/29', makiCount: 1, extras: ['Crispy Rice'], price: 29 },
-    { key: 'ramen+12', title: 'Ramen + 12 Makis', text: 'Ramen + 1 tabla de 12 cortes — S/39', makiCount: 1, extras: ['Ramen'], price: 39 }
+    { key: 'wednesday-3x2', title: 'OFERTA MIÉRCOLES 3x2', text: '3 tablas de 12 cortes por S/40', makiCount: 3, price: 40, onlyOn: 3, image: './images/menu/california.jpg' },
+    { key: 'bundle-48', title: '48 Makis', text: '4 tablas de 12 cortes — S/70', makiCount: 4, price: 70, image: './images/menu/dragon.jpg' },
+    { key: 'bundle-36', title: '36 Makis', text: '3 tablas de 12 cortes — S/50 (S/40 los miércoles)', makiCount: 3, price: 50, image: './images/menu/promo-36.jpg' },
+    { key: 'bundle-24', title: '24 Makis', text: '2 tablas de 12 cortes — S/36', makiCount: 2, price: 36, image: './images/menu/promo-24.jpg' },
+    //{ key: '12+aloe', title: '12 Makis + Bebida Japonesa', text: '1 tabla de 12 cortes + Bebida Japonesa — S/23', makiCount: 1, price: 23, image: './images/menu/milkis.jpg' },
+    { key: '12+poke', title: '12 Makis + Poke Bowl', text: '1 tabla de 12 cortes + Poke Bowl — S/37', makiCount: 1, price: 37, image: './images/menu/poke-bowls.jpg' },
+    { key: 'sandwich+12', title: 'Sandwich Furai + 12 Makis', text: 'Sandwich Furai + 1 tabla de 12 cortes — S/34', makiCount: 1, price: 34, image: './images/menu/sandwich-furai.jpg' },
+    { key: '12+crispy', title: '12 Makis + Crispy Rice', text: '1 tabla de 12 cortes + Crispy Rice — S/29', makiCount: 1, price: 29, image: './images/menu/crispy-rice.jpg' },
+    { key: 'ramen+12', title: 'Ramen + 12 Makis', text: 'Ramen + 1 tabla de 12 cortes — S/39', makiCount: 1, price: 39, image: './images/menu/tonkotsu-ramen.jpg' },
+    { key: 'alitas4+12', title: '4 Alitas + 12 Makis', text: '4 alitas + 1 tabla de 12 cortes — S/26', makiCount: 1, price: 26, image: './images/menu/promo-makis-alitas.jpg' }
 ];
 
 window.promotions = promotions;
@@ -517,9 +518,12 @@ function renderProducts(category = 'todos', searchTerm = '') {
 
             const promoCard = document.createElement('div');
             promoCard.className = 'menu-item';
+            const imageHTML = promo.image 
+                ? `<img src="${promo.image}" alt="${escapeHtml(promo.title)}" loading="lazy">`
+                : `<i class="fas fa-gift" style="font-size: 4rem; color: var(--primary-color);"></i>`;
             promoCard.innerHTML = `
-                <div class="item-image" style="display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
-                    <i class="fas fa-gift" style="font-size: 4rem; color: var(--primary-color);"></i>
+                <div class="item-image" style="${promo.image ? '' : 'display: flex; align-items: center; justify-content: center; background: #f5f5f5;'}">
+                    ${imageHTML}
                 </div>
                 <div class="item-info">
                     <h3>${escapeHtml(promo.title)}</h3>

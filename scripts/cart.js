@@ -461,7 +461,7 @@ function submitOrder() {
                     if (flavor) sabores.push(flavor.name);
                 }
                 if (sabores.length > 0) {
-                    message += `  Sabores: ${sabores.join(', ')}\n`;
+                    message += `  *Sabores:* ${sabores.join(', ')}\n`;
                 }
             }
             if (item.extras && item.extras.length) {
